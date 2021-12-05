@@ -26,6 +26,8 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+set.seed(100)
 ```
 
 # Problem 1
@@ -46,6 +48,8 @@ birthweight = read_csv("data/birthweight.csv") %>%
 We drop "pnumlbw" and "pnumsage" column because they only have "0" values and give no information to differentiate the children.
 
 ## Regression Model
+
+It is reasonable that a baby's weight is related to the mother's health condition during pregancy. Therefore, I build a model to fit the baby's birthweight to all the variables related the mother during pregancy
 
 ```{r}
 fit = lm(bwt ~ delwt + menarche + mheight + momage + mrace + smoken + wtgain, data = birthweight)
@@ -93,6 +97,7 @@ cv_df %>%
   ggplot(aes(x = model, y = rmse)) + geom_violin()
 ```
 
+From the violin plot, we can see that the model using mother's variables is not as optimal as the model using baby's variables. 
 
 # Problem 2
 
@@ -113,7 +118,7 @@ weather_df =
 ```{r}
 bootstrap = 
   weather_df %>% 
-  modelr::bootstrap(n = 50) %>% 
+  modelr::bootstrap(n = 5000) %>% 
   mutate(
     models = map(strap, ~lm(tmax ~ tmin, data = .x)),
     results1 = map(models, broom::glance),
@@ -143,6 +148,8 @@ bootstrap %>%
   ggplot(aes(log_value)) + 
   geom_density()
 ```
+
+We can see that both distributions after bootstrapping is almost normal.
 
 ```{r}
 bootstrap_results = 
